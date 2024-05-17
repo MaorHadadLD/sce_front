@@ -23,7 +23,7 @@ export default function StudentAddPage() {
 
   return (
     <View style={styles.container}>
-      <Image style={styles.avatar} source={require('./assets/avatar_user.png')} />
+      <Image style={styles.avatar} source={require('../assets/avatar_user.png')} />
       <TextInput
         style={styles.input}
         onChangeText={onChangeName}
