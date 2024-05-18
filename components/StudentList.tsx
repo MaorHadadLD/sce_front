@@ -1,5 +1,6 @@
 import { FC, useState } from "react";
-import { Text } from "react-native";
+import { FlatList, Text, StyleSheet} from "react-native";
+import StudentListRow from "./StudentListRow";
 
 type Student = {
     name: string;
@@ -15,9 +16,24 @@ const data: Student[] = [
 
 const StudentList: FC = () => {
     return (
-        <Text>Student List</Text>
+       <FlatList 
+       style={styles.flatlist}
+       data={data}
+       keyExtractor={(item) => item.id}
+       renderItem={({item}) => 
+       <StudentListRow 
+       name={item.name} 
+       id={item.id} 
+       imagUrl={item.imgUrl}/>
+         }
+       />
     );
 }
 
-
+const styles = StyleSheet.create({
+    
+    flatlist: {
+      flex: 1,
+    },
+});
 export default StudentList;
