@@ -16,7 +16,7 @@ const LogIn: FC<Props> = ({ navigation }) => {
     };
 
     const handleSignUp = () => {
-        // Add your sign up logic here
+        navigation.navigate('register'); // navigation
         console.log('Navigate to Sign Up Page');
     };
 

@@ -10,7 +10,7 @@ const StudentAddPage: FC<{ navigation: any }> = ({ navigation }) => {
 
     const onCancel = () => {
         console.log('Cancel');
-        navigation.navigate('StudentListPage');
+        navigation.navigate('StudentList');
     }
     const onSave = () => {
         console.log('Save');
@@ -20,7 +20,7 @@ const StudentAddPage: FC<{ navigation: any }> = ({ navigation }) => {
             imgUrl: address
         }
         StudentModel.addStudent(student);
-        navigation.navigate('StudentListPage');
+        navigation.navigate('StudentList');
     }
     return (
         <View style={styles.container}>
