@@ -1,9 +1,14 @@
-import React, { useState } from 'react';
+import React, { FC, useState } from 'react';
 import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
+import { NavigationProp } from '@react-navigation/native';
 
-export default function LogIn() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+type Props = {
+    navigation: NavigationProp<any>;
+};
+
+const LogIn: FC<Props> = ({ navigation }) => {
+    const [email, setEmail] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
 
     const handleLogin = () => {
         // Add your login logic here
@@ -42,9 +47,12 @@ export default function LogIn() {
             <View style={styles.buttonContainer}>
                 <Button title="Sign Up" onPress={handleSignUp} />
             </View>
+            <View style={styles.buttonContainer}>
+                <Button title="List" onPress={() => navigation.navigate("StudentList")} />
+            </View>
         </View>
     );
-}
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -77,3 +85,5 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
 });
+
+export default LogIn;

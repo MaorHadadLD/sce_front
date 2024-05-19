@@ -3,9 +3,6 @@ import { FlatList, Text, StyleSheet} from "react-native";
 import StudentListRow from "./StudentListRow";
 import StudentModel, {Student} from "../Model/StudentModel";
 
-
-
-
 const StudentList: FC = () => {
 
   const [data, setData] = useState<Student[]>([])
