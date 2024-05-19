@@ -35,3 +35,12 @@ const getPost = (title: string): Post | undefined => {
 const addPost = (post: Post) => {
     data.push(post);
 }
+
+const deletePost = (title: string) => {
+    const index = data.findIndex((post) => post.title === title);
+    if (index !== -1) {
+        data.splice(index, 1);
+    }
+}
+
+export default { getAllPosts, getPost, addPost, deletePost };
