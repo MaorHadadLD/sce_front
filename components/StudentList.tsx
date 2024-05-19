@@ -5,19 +5,25 @@ import StudentModel, { Student } from "../Model/StudentModel";
 
 
 const StudentList: FC<{ navigation: any }> = ({ navigation }) => {
-    const [data, setData] = useState<Student[]>([])
+    const [students, setStudents] = useState<Student[]>([])
     const onItemSelected = (id: string) => {
         console.log('Item selected: ' + id);
         navigation.navigate('StudentDetailsPage', { id: id });
     }
 
     useEffect(() => {
-        const unsubsribe = navigation.addListener('focus', () => {
-            setData([...StudentModel.getAllStudents()])
-            console.log("screen in focus")
-        })
-        return unsubsribe
-    }, [navigation])
+      const unsubscribe = navigation.addListener('focus', async () => {
+      console.log('focus')
+      let students: Student[] = []
+      try {
+      students = await StudentModel.getAllStudents()
+      } catch (err) {
+      console.log("fail fetching students " + err)
+      }
+      setStudents(students)
+      })
+      return unsubscribe
+      })
 
 
     useEffect(() => {
@@ -34,7 +40,7 @@ const StudentList: FC<{ navigation: any }> = ({ navigation }) => {
     return (
         <FlatList
             style={styles.flatList}
-            data={data}
+            data={students}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
                 <StudentListRow
