@@ -27,3 +27,11 @@ const getAllPosts = async () => {
     }
     return data
    }
+
+const getPost = (title: string): Post | undefined => {
+    return data.find((post) => post.title == title);
+}
+
+const addPost = (post: Post) => {
+    data.push(post);
+}
