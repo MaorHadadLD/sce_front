@@ -1,14 +1,19 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, TouchableHighlight } from 'react-native';
 import React, {FC} from 'react';
 
 const StudentListRow: FC<{name: string, id: string, imagUrl: string}> = ({name, id, imagUrl}) => {
+  const onClick = () => {
+    console.log(`Clicked on ${name}`);
+  }
   return (
+    <TouchableHighlight onPress={onClick}>
     <View style={styles.listrow}>
        <Image style={styles.avatar} source={require('../assets/avatar_user.png')}/>
       <Text style={styles.text}>{name}</Text>
       <Text style={styles.text}>{id}</Text>
     </View>
+    </TouchableHighlight>
   );
 }
 
