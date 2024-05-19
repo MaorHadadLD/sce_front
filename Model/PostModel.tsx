@@ -3,3 +3,7 @@ export type Post = {
     message: string,
     owner: string
 }
+
+const data: Post[] = [
+];
+
