@@ -9,9 +9,8 @@ const Registr: FC<{ navigation: any }> = ({ navigation }) => {
 
     const [name, onInitName] = React.useState('');
     const [id, onInitId] = React.useState('');
+    const [password, setPassword] = useState('');
     const [image, setImage] = useState(null);
-    
-
     const [imageURI, setImageURI] = useState("");
 
     const requestPermission = async () => {
@@ -58,7 +57,7 @@ const Registr: FC<{ navigation: any }> = ({ navigation }) => {
 
     const onCancel = () => {
         console.log('Cancel');
-        navigation.navigate('StudentList');
+        navigation.navigate('LogIn');
     }
 
     const onSave = () => {
@@ -69,7 +68,7 @@ const Registr: FC<{ navigation: any }> = ({ navigation }) => {
             imgUrl: image ?? ''
         }
         StudentModel.addStudent(student);
-        navigation.navigate('StudentListPage');
+        navigation.navigate('StudentList');
     }
 
     return (
@@ -98,6 +97,13 @@ const Registr: FC<{ navigation: any }> = ({ navigation }) => {
                 onChangeText={onInitId}
                 value={id}
                 placeholder="Enter your id"
+            />
+            <TextInput
+                style={styles.input}
+                onChangeText={setPassword}
+                value={password}
+                placeholder="Enter your password"
+                secureTextEntry
             />
             <View style={styles.buttons}>
                 <Button title="Cancel" onPress={onCancel} />
