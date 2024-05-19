@@ -1,4 +1,4 @@
-type Student = {
+export type Student = {
     name: string;
     id: string;
     imgUrl: string;
@@ -29,4 +29,4 @@ const deletStudent = (id: string) => {
     }
 }
 
-export {getAllStudents, getStudent, addStudent, deletStudent};
+export default {getAllStudents, getStudent, addStudent, deletStudent};
