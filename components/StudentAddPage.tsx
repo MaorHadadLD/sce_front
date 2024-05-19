@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, Button, Alert, TextInput, StatusBar } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, Button, Alert, TextInput, StatusBar, ScrollView } from 'react-native';
 import React, { useState, FC } from 'react';
 import StudentModel, { Student } from '../Model/StudentModel';
 
@@ -23,7 +23,7 @@ const StudentAddPage: FC<{ navigation: any }> = ({ navigation }) => {
         navigation.navigate('StudentList');
     }
     return (
-        <View style={styles.container}>
+        <ScrollView style={styles.container}>
             <Image style={styles.avatar} source={require('../assets/avatar_user.png')} />
             <TextInput
                 style={styles.input}
@@ -51,7 +51,7 @@ const StudentAddPage: FC<{ navigation: any }> = ({ navigation }) => {
                     <Text style={styles.buttonText}>SAVE</Text>
                 </TouchableOpacity>
             </View>
-        </View>
+        </ScrollView>
     );
 }
 
