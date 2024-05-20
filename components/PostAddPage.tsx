@@ -1,16 +1,14 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, Button, Alert, TextInput, StatusBar, ScrollView, TouchableHighlight } from 'react-native';
-import React, { useState, FC, useEffect } from 'react';
-import StudentModel, { Student } from '../Model/StudentModel';
+import { StyleSheet, Text, View, Image, TouchableOpacity, TextInput, StatusBar, ScrollView } from 'react-native';
+import React, { FC, useState, useEffect } from 'react';
+import PostModel, { Post } from '../Model/PostModel';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 
-
-const StudentAddPage: FC<{ navigation: any }> = ({ navigation }) => {
-    const [name, onChangeName] = React.useState('');
-    const [id, onChangeId] = React.useState('');
-    const [address, onChangeAddress] = React.useState('');
-    const [image, setImage] = React.useState('');
+const PostAddPage: FC<{ navigation: any }> = ({ navigation }) => {
+    const [title, setTitle] = useState('');
+    const [message, setMessage] = useState('');
     const [imageURI, setImageURI] = useState('');
+    const [owner, setOwner] = useState('');
 
     const requestPermission = async () => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -27,11 +25,11 @@ const StudentAddPage: FC<{ navigation: any }> = ({ navigation }) => {
         try {
             const result = await ImagePicker.launchCameraAsync();
             if (!result.canceled) {
-                console.log("uri:" + result.assets[0].uri);
+                console.log('uri:', result.assets[0].uri);
                 setImageURI(result.assets[0].uri);
             }
         } catch (error) {
-            console.log("Error reading an image", error);
+            console.log('Error taking a photo:', error);
         }
     };
 
@@ -54,95 +52,83 @@ const StudentAddPage: FC<{ navigation: any }> = ({ navigation }) => {
 
     const onCancel = () => {
         console.log('Cancel');
-        navigation.navigate('StudentList');
-    }
-    const onSave = () => {
-        const student: Student = {
-            name: name,
-            id: id,
-            imgUrl: image ?? '',
-            email: ''
+        navigation.navigate('PostList');
+    };
+
+    const onSaveCallback = async () => {
+        console.log('Save');
+        const post: Post = {
+            title: title,
+            message: message,
+            owner: owner,
+            imageUrl: imageURI
         };
-        StudentModel.addStudent(student);
-        navigation.navigate('StudentList');
-    }
+        try {
+            if (imageURI !== '') {
+                const url = await PostModel.uploadImage(imageURI);
+                post.imageUrl = url as string;
+            }
+            PostModel.addPost(post);
+        } catch (err) {
+            console.log('Error saving post:', err);
+        }
+        navigation.goBack();
+        // PostModel.addPost(post);
+        // navigation.navigate('PostList');
+    };
+
     return (
         <ScrollView style={styles.container}>
-           <View style={styles.image_picker}>
+            <View style={styles.image_picker}>
                 {imageURI !== '' ? (
                     <Image style={styles.image} source={{ uri: imageURI }} />
                 ) : (
                     <Image style={styles.image} source={require('../assets/avatar_user.png')} />
                 )}
-                <TouchableHighlight style={styles.image_picker_button} onPress={takePhoto}>
+                <TouchableOpacity style={styles.image_picker_button} onPress={takePhoto}>
                     <Ionicons name="camera" size={24} color="black" />
-                </TouchableHighlight>
-                <TouchableHighlight style={styles.image_button} onPress={selectImage}>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.image_button} onPress={selectImage}>
                     <Ionicons name="image" size={24} color="black" />
-                </TouchableHighlight>
+                </TouchableOpacity>
             </View>
+
             <TextInput
                 style={styles.input}
-                onChangeText={onChangeName}
-                value={name}
+                onChangeText={setTitle}
+                value={title}
+                placeholder="Enter post title"
+            />
+            <TextInput
+                style={styles.input}
+                onChangeText={setMessage}
+                value={message}
+                placeholder="Enter post message"
+                multiline
+            />
+            <TextInput
+                style={styles.input}
+                onChangeText={setOwner}
+                value={owner}
                 placeholder="Enter your name"
-            />
-            <TextInput
-                style={styles.input}
-                onChangeText={onChangeId}
-                value={id}
-                placeholder="Enter your id"
-            />
-            <TextInput
-                style={styles.input}
-                onChangeText={onChangeAddress}
-                value={address}
-                placeholder="Enter your address"
             />
             <View style={styles.buttons}>
                 <TouchableOpacity style={styles.button} onPress={onCancel}>
                     <Text style={styles.buttonText}>CANCEL</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.button} onPress={onSave}>
+                <TouchableOpacity style={styles.button} onPress={onSaveCallback}>
                     <Text style={styles.buttonText}>SAVE</Text>
                 </TouchableOpacity>
             </View>
         </ScrollView>
     );
-}
+};
 
 const styles = StyleSheet.create({
     container: {
         marginTop: StatusBar.currentHeight,
         flex: 1,
         flexDirection: 'column',
-    },
-    title: {
-        fontSize: 30,
-        fontWeight: 'bold',
-        backgroundColor: 'blue',
-    },
-    avatar: {
-        alignSelf: 'center',
-        height: 200,
-        width: 200,
-    },
-    input: {
-        height: 40,
-        margin: 12,
-        borderWidth: 1,
-        padding: 10,
-    },
-    buttons: {
-        flexDirection: 'row',
-    },
-    button: {
-        flex: 1,
-        margin: 10,
-        alignItems: 'center',
-    },
-    buttonText: {
-        padding: 10
     },
     image_picker: {
         height: 250,
@@ -166,8 +152,23 @@ const styles = StyleSheet.create({
         bottom: 10,
         right: 5,
     },
-
+    input: {
+        height: 40,
+        margin: 12,
+        borderWidth: 1,
+        padding: 10,
+    },
+    buttons: {
+        flexDirection: 'row',
+    },
+    button: {
+        flex: 1,
+        margin: 10,
+        alignItems: 'center',
+    },
+    buttonText: {
+        padding: 10,
+    },
 });
 
-
-export default StudentAddPage;
+export default PostAddPage;

@@ -1,6 +1,9 @@
 import React, { FC, useState } from 'react';
-import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Button, StyleSheet, Text, TextInput, View } from 'react-native';
 import { NavigationProp } from '@react-navigation/native';
+import apiClient from '../api/Client';  // Ensure this path is correct
+import StudentModel from '../Model/StudentModel';
+import StudentApi from '../api/StudentApi';
 
 type Props = {
     navigation: NavigationProp<any>;
@@ -10,13 +13,21 @@ const LogIn: FC<Props> = ({ navigation }) => {
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
 
-    const handleLogin = () => {
-        // Add your login logic here
-        console.log('Login with', { email, password });
-    };
+    const handleLogin = async () => {
+        console.log('Log In');
+       try {
+            const res = StudentApi.login({ email, password });
+            console.log('Log In successful', res);
+            navigation.navigate('Home');
+       }
+         catch (error) {
+                console.log('Log In failed');
+                Alert.alert('Log In failed');
+         }
+    }
 
     const handleSignUp = () => {
-        navigation.navigate('register'); // navigation
+        navigation.navigate('Registration');
         console.log('Navigate to Sign Up Page');
     };
 
@@ -47,9 +58,7 @@ const LogIn: FC<Props> = ({ navigation }) => {
             <View style={styles.buttonContainer}>
                 <Button title="Sign Up" onPress={handleSignUp} />
             </View>
-            <View style={styles.buttonContainer}>
-                <Button title="List" onPress={() => navigation.navigate("StudentList")} />
-            </View>
+            
         </View>
     );
 };

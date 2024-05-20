@@ -3,14 +3,15 @@ import React, { useState, FC } from 'react';
 
 
 
-const StudentListRow: FC<{
-    name: string,
-    id: string,
-    imgUrl: string,
-    onItemSelected: (id: string) => void
-}> = ({ name, id, imgUrl, onItemSelected }) => {
+const PostListRow: FC<{
+    title: string,
+    message: string,
+    owner: string
+    imageUrl: string
+    onItemSelected: (title: string) => void
+}> = ({ title,message, owner, imageUrl, onItemSelected }) => {
     const onPress = () => {
-        onItemSelected(id);
+        onItemSelected(title);
     }
     return (
         <TouchableHighlight
@@ -19,8 +20,10 @@ const StudentListRow: FC<{
             <View style={styles.listrow}>
                 <Image style={styles.avatar} source={require('../assets/avatar_user.png')} />
                 <View style={styles.info}>
-                    <Text style={styles.name}>{name}</Text>
-                    <Text style={styles.id}>{id}</Text>
+                    <Text style={styles.name}>{title}</Text>
+                    <Text style={styles.id}>{message}</Text>
+                    <Text style={styles.id}>{imageUrl}</Text>
+                    <Text style={styles.id}>{owner}</Text>
                 </View>
             </View>
         </TouchableHighlight>
@@ -55,4 +58,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default StudentListRow;
+export default PostListRow;

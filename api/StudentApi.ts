@@ -6,7 +6,7 @@ const register = async (user: any) => {
 };
 
 const login = async (user: any) => {
-    return apiClient.post('/auth/login', {user});
+    return apiClient.post('/auth/login', user);
 };
 
 const getAllStudents = async () => {
