@@ -4,6 +4,7 @@ import { NavigationProp } from '@react-navigation/native';
 import apiClient from '../api/Client';  // Ensure this path is correct
 import StudentModel from '../Model/StudentModel';
 import StudentApi from '../api/StudentApi';
+import Home from './Home';
 
 type Props = {
     navigation: NavigationProp<any>;
@@ -18,7 +19,12 @@ const LogIn: FC<Props> = ({ navigation }) => {
        try {
             const res = StudentApi.login({ email, password });
             console.log('Log In successful', res);
-            navigation.navigate('Home');
+            navigation.reset(
+                {
+                    index: 0,
+                    routes: [{ name: 'Home' }],
+                }
+            );
        }
          catch (error) {
                 console.log('Log In failed');
