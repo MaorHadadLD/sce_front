@@ -1,16 +1,16 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity, Button, Alert, TextInput, StatusBar } from 'react-native';
 import React, { useState, FC, useEffect } from 'react';
-import StudentModel from '../Model/StudentModel';
+import PostModel from '../Model/PostModel';
 
 
-const StudentDetailsPage: FC<{ route: any, navigation: any }> = ({ route, navigation }) => {
-    const student = StudentModel.getStudent(route.params.id);
+const PostDetailsPage: FC<{ route: any, navigation: any }> = ({ route, navigation }) => {
+    const post = PostModel.getPost(route.params.id);
     useEffect(() => {
         navigation.setOptions({
-            title: student?.name,
+            title: post?.title,
             headerRight: () => (
                 <Button
-                    onPress={() => navigation.navigate('StudentAddPage')}
+                    onPress={() => navigation.navigate('PostAddPage')}
                     title="Edit"
                 />
             ),
@@ -22,9 +22,10 @@ const StudentDetailsPage: FC<{ route: any, navigation: any }> = ({ route, naviga
     return (
         <View style={styles.container}>
             <Image style={styles.avatar} source={require('../assets/avatar_user.png')} />
-            <Text style={styles.input}>{student?.name}</Text>
-            <Text style={styles.input}>{student?.id}</Text>
-            <Text style={styles.input}>{student?.imgUrl}</Text>
+            <Text style={styles.input}>{post?.title}</Text>
+            <Text style={styles.input}>{post?.message}</Text>
+            <Text style={styles.input}>{post?.owner}</Text>
+            <Image style={styles.avatar} source={{ uri: post?.imageUrl }} />
         </View>
     );
 }
@@ -65,4 +66,4 @@ const styles = StyleSheet.create({
 
 });
 
-export default StudentDetailsPage;
+export default PostDetailsPage;

@@ -1,9 +1,10 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React, {FC} from "react";
-import {Button, StyleSheet, Text, TextInput, View} from "react-native";
+import {Button, StyleSheet, Text, TextInput, View, StatusBar} from "react-native";
 import PostList from "./PostList";
-import { NavigationContainer } from "@react-navigation/native";
+import PostDetailsPage from "./PostDetailsPage";
+
 
 
 type Props = {
@@ -11,12 +12,12 @@ type Props = {
 };
 
 const Tab = createBottomTabNavigator();
-const PostListStack = createNativeStackNavigator();
+const PostListStackScreen = createNativeStackNavigator();
 
 
 const PostListScreen: FC = () => {  
     return (
-        <PostListStack.Navigator
+        <PostListStackScreen.Navigator
             screenOptions={{
                 headerStyle: {
                     backgroundColor: '#f4511e',
@@ -29,30 +30,53 @@ const PostListScreen: FC = () => {
                 headerShown: false,
             }}
         >
-            <PostListStack.Screen name="PostList" component={PostList} options={{ title: 'Posts' }} />
-        </PostListStack.Navigator>
+            <PostListStackScreen.Screen name="PostList" component={PostList} options={{ title: 'Posts' }} />
+            <PostListStackScreen.Screen name="PostDetailsPage" component={PostDetailsPage} options={{ title: 'Post Details' }} />
+        </PostListStackScreen.Navigator>
     );
 } 
 
+// const TabNavigator: FC = () => {
+//     return (
+//         <Tab.Navigator>
+//             <Tab.Screen 
+//                 name="Posts" 
+//                 component={PostListScreen} 
+//                 options={{
+//                     tabBarLabel: 'Posts',
+//                     tabBarIcon: ({ color, size }) => (
+//                         <Text style={{ color, fontSize: size }}>📄</Text>
+//                     ),
+//                 }}
+//             />
+//         </Tab.Navigator>
+//     );
+// }   
+
 const Home: FC<Props> = () => {
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>RecipeNet</Text>
-            <Text style={styles.subtitle}>Home</Text>
-            <Tab.Navigator>
-                <Tab.Screen name="Posts" component={PostListScreen} />
-            </Tab.Navigator>
-        </View>
+        <Tab.Navigator>
+        <Tab.Screen 
+            name="Posts" 
+            component={PostListScreen} 
+            options={{
+                tabBarLabel: 'Posts',
+                tabBarIcon: ({ color, size }) => (
+                    <Text style={{ color, fontSize: size }}>📄</Text>
+                ),
+            }}
+        />
+    </Tab.Navigator>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
+        marginTop: StatusBar.currentHeight,
         flex: 1,
-        backgroundColor: '#fff',
+        flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center',
-    },
+      },
     title: {
         fontSize: 24,
         fontWeight: 'bold',

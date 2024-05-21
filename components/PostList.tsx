@@ -2,15 +2,16 @@ import { FC, useEffect, useState } from "react";
 import { FlatList, Text, StyleSheet, View, Image, Button } from "react-native";
 import PostModel, { Post } from "../Model/PostModel";
 import PostListRow from "./PostListRow";
+import PostDetailsPage from "./PostDetailsPage";
 import { on } from "form-data";
 
 const PostList: FC<{ navigation: any }> = ({ navigation }) => {
     const [posts, setPosts] = useState<Post[]>([]);
     
 
-    const onItemSelected = (id: string) => {
-        console.log('Item selected: ' + id);
-        navigation.navigate('PostDetailsPage', { id: id });
+    const onItemSelected = (title: string) => {
+        console.log('Item selected: ' + title);
+        navigation.navigate('PostDetailsPage', { title: title });
     }
 
     useEffect(() => {

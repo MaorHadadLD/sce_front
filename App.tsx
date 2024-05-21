@@ -1,5 +1,4 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, StatusBar  } from 'react-native';
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -15,9 +14,9 @@ export default function App() {
   return (
     <NavigationContainer>
     <Stack.Navigator initialRouteName="LogIn">
-      <Stack.Screen name="LogIn" component={LogIn} />
-      <Stack.Screen name="Registration" component={Registration} />
-      <Stack.Screen name="Home" component={Home} />
+      <Stack.Screen name="LogIn" component={LogIn} options={{ headerShown: false }} />
+      <Stack.Screen name="Registration" component={Registration} options={{ headerShown: false }} />
+      <Stack.Screen name="Home" component={Home} options={{ headerShown: false }}  />
     </Stack.Navigator>
   </NavigationContainer>
   );
@@ -26,9 +25,8 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: {
+    marginTop: StatusBar.currentHeight,
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: 'column',
   },
 });
