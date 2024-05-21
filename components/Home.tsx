@@ -4,7 +4,7 @@ import React, {FC} from "react";
 import {Button, StyleSheet, Text, TextInput, View, StatusBar} from "react-native";
 import PostList from "./PostList";
 import PostDetailsPage from "./PostDetailsPage";
-
+import PostAddPage from "./PostAddPage";
 
 
 type Props = {
@@ -13,6 +13,7 @@ type Props = {
 
 const Tab = createBottomTabNavigator();
 const PostListStackScreen = createNativeStackNavigator();
+const AddPostStackScreen = createNativeStackNavigator();
 
 
 const PostListScreen: FC = () => {  
@@ -30,28 +31,36 @@ const PostListScreen: FC = () => {
                 headerShown: false,
             }}
         >
-            <PostListStackScreen.Screen name="PostList" component={PostList} options={{ title: 'Posts' }} />
+            <PostListStackScreen.Screen name="PostList" component={PostList} options={{ headerShown: true }} />
+            <PostListStackScreen.Screen name="PostAddPage" component={PostAddPage} options={{ title: 'Add Post' }} />
             <PostListStackScreen.Screen name="PostDetailsPage" component={PostDetailsPage} options={{ title: 'Post Details' }} />
         </PostListStackScreen.Navigator>
     );
 } 
 
-// const TabNavigator: FC = () => {
+// const AddPostScreen: FC = () => {
 //     return (
-//         <Tab.Navigator>
-//             <Tab.Screen 
-//                 name="Posts" 
-//                 component={PostListScreen} 
-//                 options={{
-//                     tabBarLabel: 'Posts',
-//                     tabBarIcon: ({ color, size }) => (
-//                         <Text style={{ color, fontSize: size }}>📄</Text>
-//                     ),
-//                 }}
-//             />
-//         </Tab.Navigator>
+//         <AddPostStackScreen.Navigator
+//             screenOptions={{
+//                 headerStyle: {
+//                     backgroundColor: '#f4511e',
+//                 },
+//                 headerTintColor: '#fff',
+//                 headerTitleStyle: {
+//                     fontWeight: 'bold',
+//                 },
+//                 headerTitleAlign: 'center',
+//                 headerShown: false,
+//             }}
+//         >
+//             <AddPostStackScreen.Screen name="PostAddPage" component={PostAddPage} options={{ title: 'Add Post' }} />
+//         </AddPostStackScreen.Navigator>
 //     );
-// }   
+// }
+
+
+
+
 
 const Home: FC<Props> = () => {
     return (
@@ -60,12 +69,23 @@ const Home: FC<Props> = () => {
             name="Posts" 
             component={PostListScreen} 
             options={{
+                headerShown: false,
                 tabBarLabel: 'Posts',
                 tabBarIcon: ({ color, size }) => (
-                    <Text style={{ color, fontSize: size }}>📄</Text>
-                ),
+                    <Text style={{ color, fontSize: 55 }}>📄</Text>
+                )
             }}
         />
+        {/* <Tab.Screen 
+            name="Add Post" 
+            component={AddPostScreen} 
+            options={{
+                tabBarLabel: 'Add Post',
+                tabBarIcon: ({ color, size }) => (
+                    <Text style={{ color, fontSize: 55 }}>➕</Text>
+                )
+            }}
+        /> */}
     </Tab.Navigator>
     );
 };

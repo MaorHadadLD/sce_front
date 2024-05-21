@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity, Button, Alert, TextInput, StatusBar } from 'react-native';
 import React, { useState, FC, useEffect } from 'react';
 import PostModel from '../Model/PostModel';
+import PostApi from '../api/PostApi'
 
 
 const PostDetailsPage: FC<{ route: any, navigation: any }> = ({ route, navigation }) => {
@@ -16,6 +17,8 @@ const PostDetailsPage: FC<{ route: any, navigation: any }> = ({ route, navigatio
             ),
         })
     }, [])
+
+    
 
 
 
@@ -51,6 +54,7 @@ const styles = StyleSheet.create({
         margin: 12,
         borderWidth: 1,
         padding: 10,
+        color: 'black',
     },
     buttons: {
         flexDirection: 'row',
