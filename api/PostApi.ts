@@ -14,7 +14,12 @@ const addPost = async (post: any) => {
 }
 
 const uploadImage = async (image: any) => {
-    return apiClient.get('/fileManager/file', image)
+    return apiClient.post('/fileManager/file', image,{
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+        
+    })
    }
 
 export default {
