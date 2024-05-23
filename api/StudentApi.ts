@@ -2,6 +2,7 @@ import apiClient from './Client';
 
 
 const register = async (user: any) => {
+    console.log("UserNew",user);
     return apiClient.post('/auth/register', {user});
 };
 
@@ -12,17 +13,29 @@ const login = async (user: any) => {
 const getAllStudents = async () => {
     return apiClient.get('/student');
 };
-
+const getStudent = async (id: String) => {
+    // const response = await apiClient.get(`/student/${id}`);
+    // return response.data; 
+    return apiClient.get(`/user/${id}`);
+};
 const addStudent = async (student: any) => {
     return apiClient.post('/student', student);
 };
 
 const uploadImage = async (image: any) => {
-    return apiClient.post('/fileManager/file', image);
+    console.log("uploadImageMaor", image);
+    return apiClient.post('/fileMulter/file?file=123.jpeg', image, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    
+    });
+
 };
 
 export default {
     getAllStudents,
+    getStudent,
     addStudent,
     uploadImage,
     register,
