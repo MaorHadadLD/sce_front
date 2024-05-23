@@ -2,9 +2,10 @@ import React, { FC, useState } from 'react';
 import { Alert, Button, StyleSheet, Text, TextInput, View } from 'react-native';
 import { NavigationProp } from '@react-navigation/native';
 import apiClient from '../api/Client';  // Ensure this path is correct
-import StudentModel from '../Model/StudentModel';
+import StudentModel from '../Model/UserModel';
 import StudentApi from '../api/StudentApi';
 import Home from './Home';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type Props = {
     navigation: NavigationProp<any>;
@@ -14,23 +15,42 @@ const LogIn: FC<Props> = ({ navigation }) => {
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
 
+
     const handleLogin = async () => {
         console.log('Log In');
-       try {
-            const res = StudentApi.login({ email, password });
-            console.log('Log In successful', res);
-            navigation.reset(
-                {
+        if (!email || !password) {
+            Alert.alert('Please fill in all fields');
+            return;
+        }
+        try {
+            console.log('CheckEmail', email);
+            console.log('CheckPassword', password);
+            
+            // Await the promise returned by StudentApi.login
+            const res: any = await StudentApi.login({ email, password });
+
+            
+            console.log('Log In successful', res.data);
+
+            
+            if (res.ok) {
+                await AsyncStorage.clear();
+                await AsyncStorage.setItem('token', res.data.refreshToken);
+                console.log('Log In successful');
+                navigation.reset({
                     index: 0,
                     routes: [{ name: 'Home' }],
-                }
-            );
-       }
-         catch (error) {
+                });
+            }
+            else {
                 console.log('Log In failed');
-                Alert.alert('Log In failed');
-         }
-    }
+                Alert.alert('Log In failed', res.data);
+            }
+        } catch (error) {
+            console.log('Log In failed', error); // Log the error for better debugging
+            Alert.alert('Log In failed', error.message || 'Unknown error'); // Show the error message if available
+        }
+    };
 
     const handleSignUp = () => {
         navigation.navigate('Registration');
