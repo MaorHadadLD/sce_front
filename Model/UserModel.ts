@@ -3,7 +3,7 @@ import FormData from "form-data";
 
 export type User = {
     name: string;
-    id: string;
+     id?: string;
     imgUrl: string;
     email: string; 
     password: string;
@@ -22,7 +22,7 @@ const getAllStudents = async () => {
             const st: User = {
                 name: obj.message,
                 id: obj._id,
-                imgUrl: "../assets/avatar_user.png",
+                imgUrl: obj.imgUrl || "../assets/avatar_user.png",
                 email: "",
                 password: "",
             }
@@ -32,8 +32,22 @@ const getAllStudents = async () => {
     return data
 }
 
-const getStudent = (id: string): User | undefined => {
-    return data.find((user) => user.id == id);
+const getStudent  = async (id: string) => {
+    console.log("getStudent()")
+    try{const res = await StudentApi.getStudent(id)
+        console.log("resBBBB: " + res.data)
+        if(!res){
+            console.log("Get failed", res)
+        }
+        else{
+            return res
+        }}
+    catch(err){
+        console.log("Get failed", err)
+    }
+    
+    
+   
 }
 
 const addStudent = (user: User) => {
@@ -54,22 +68,25 @@ const deleteStudent = (id: string) => {
 }
 
 const uploadImage = async (imageURI: string) => {
-    var body = new FormData();
-    body.append('file', { name: "name", type: 'image/jpeg', uri: imageURI });
+    let body = new FormData();
+    body.append('file', {
+        uri: imageURI,
+        name: 'photo.jpg',
+        type: 'image/jpeg'
+    });
+
     try {
-        const res = await StudentApi.uploadImage(body)
-        if (!res.ok) {
-            console.log("save failed " + res.problem)
+        const res = await StudentApi.uploadImage(body);
+        if (res.status !== 200) {
+            console.log("save failed.. " + res.problem);
         } else {
-            if (res.data) {
-                const d: any = res.data
-                console.log("save passed" + d.url)
-                return d.url
-            }
+            const d = res.data;
+            console.log("save passed" + d);
+            return d.url;
         }
     } catch (err) {
-        console.log("save failed " + err)
+        console.log("save failed " + err);
     }
-}
+};
 
 export default { getAllStudents, getStudent, addStudent, deleteStudent, uploadImage };
