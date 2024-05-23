@@ -1,7 +1,7 @@
 import * as ImagePicker from 'expo-image-picker';
 import React, { FC, useEffect, useState } from 'react';
 import { Alert, Button, Image, ScrollView, StyleSheet, TextInput, TouchableHighlight, View } from 'react-native';
-import StudentModel, { User } from '../Model/StudentModel';
+import UserModel, { User } from '../Model/UserModel';
 import { Ionicons } from '@expo/vector-icons';
 import StudentApi from '../api/StudentApi';
 
@@ -12,6 +12,7 @@ const Registration: FC<{ navigation: any }> = ({ navigation }) => {
     const [email, setEmail] = useState('');
     const [image, setImage] = useState(null);
     const [imageURI, setImageURI] = useState('');
+    const [age, setAge] = useState("");
 
     const requestPermission = async () => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -69,7 +70,7 @@ const Registration: FC<{ navigation: any }> = ({ navigation }) => {
         navigation.navigate('LogIn');
     };
 
-    const onSave = () => {
+    const onSave = async () => {
         if (!validatePassword(password)) {
             Alert.alert('Invalid Password', 'Password must be at least 6 characters long and contain both letters and digits.');
             return;
@@ -88,8 +89,9 @@ const Registration: FC<{ navigation: any }> = ({ navigation }) => {
             email: email, 
             password: password,
         };
-        StudentModel.uploadImage(imageURI);
-         StudentApi.register(user);
+       user.imgUrl= await UserModel.uploadImage(imageURI);
+       console.log("userImageBar", user.imgUrl);
+         await StudentApi.register(user);
         navigation.navigate('LogIn');
     };
 
@@ -115,12 +117,19 @@ const Registration: FC<{ navigation: any }> = ({ navigation }) => {
                 value={name}
                 placeholder="Enter your name"
             />
-            <TextInput
+            {/* <TextInput
                 style={styles.input}
                 onChangeText={onInitId}
                 value={id}
                 placeholder="Enter your ID"
-            />
+            /> */}
+            {/* <TextInput
+                style={styles.input}
+                onChangeText={setAge}
+                value={age.toString()}
+                placeholder="Enter your age"
+                keyboardType="numeric"
+            /> */}
             <TextInput
                 style={styles.input}
                 onChangeText={setEmail}
