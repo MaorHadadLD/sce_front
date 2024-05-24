@@ -22,10 +22,15 @@ const uploadImage = async (image: any) => {
     })
    }
 
+   const getPostByOwner = async (owner: string) => {
+    return apiClient.get(`/post/owner/${owner}`)
+}
+
 export default {
     getAllPosts,
     getPost,
     addPost,
     uploadImage,
+    getPostByOwner
     
 }
