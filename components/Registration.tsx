@@ -71,6 +71,7 @@ const Registration: FC<{ navigation: any }> = ({ navigation }) => {
     };
 
     const onSave = async () => {
+        console.log('Save!!');
         if (!validatePassword(password)) {
             Alert.alert('Invalid Password', 'Password must be at least 6 characters long and contain both letters and digits.');
             return;
@@ -81,7 +82,7 @@ const Registration: FC<{ navigation: any }> = ({ navigation }) => {
             return;
         }
 
-        console.log('Save');
+        console.log('Save345');
         const user: User = {
             name: name,
             id: id,
