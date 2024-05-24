@@ -6,21 +6,23 @@ import PostDetailsPage from "./PostDetailsPage";
 import { on } from "form-data";
 
 const PostList: FC<{ navigation: any }> = ({ navigation }) => {
-    const [posts, setPosts] = useState<Post[]>([]);
+    const [data, setData] = useState<Post[]>([]);
     
 
-    const onItemSelected = (title: string) => {
-        console.log('Item selected: ' + title);
-        navigation.navigate('PostDetailsPage', { title: title });
+    const onItemSelected = (_id: string) => {
+        console.log('Item selectedNOmen: ' + _id);
+        navigation.navigate('PostDetailsPage', { _id: _id });
     }
 
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', async () => {
             console.log('focus');
+            // setData([...PostModel.getPost()]);
             let posts: Post[] = [];
             try {
                 posts = await PostModel.getAllPosts();
-                setPosts(posts);
+                console.log("postsXX: " + posts.map((post) => post._id));
+                setData(posts);
             } catch (err) {
                 console.log("fail fetching post " + err)
                 }
@@ -37,19 +39,28 @@ const PostList: FC<{ navigation: any }> = ({ navigation }) => {
                 />
             ),
         })
+        navigation.setOptions({
+            headerLeft: () => (
+                <Button
+                    onPress={() => navigation.navigate('MyPost')}
+                    title="My Post"
+                />
+            ),
+        })
     }, [])
 
     return (
         <View style={styles.container}>
             <FlatList
-                data={posts}
-                keyExtractor={(item) => item.title}
+                data={data}
+                keyExtractor={(item) => item._id ?? ''}
                 renderItem={({ item }) => (
                     <PostListRow
                         title={item.title}
                         message={item.message}
                         owner={item.owner}
-                        imageUrl={item.imageUrl}
+                        imgUrl={item.imgUrl}
+                        _id={item._id ?? ''}
                         onItemSelected={onItemSelected}
                     />
                 )}
