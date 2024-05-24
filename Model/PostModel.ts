@@ -1,16 +1,15 @@
-import PostApi from '../api/PostApi'
-import FormData from 'form-data'
+import PostApi from '../api/PostApi';
+import FormData from 'form-data';
 
 export type Post = {
     title: string,
     message: string,
-    owner: string
-    imageUrl: string
-}
+    owner: string,
+    imgUrl: string
+    _id?: string
+};
 
-const data: Post[] = [
-];
-
+const data: Post[] = [];
 
 const getAllPosts = async (): Promise<Post[]> => {
     console.log("getAllPosts()");
@@ -23,7 +22,8 @@ const getAllPosts = async (): Promise<Post[]> => {
                 title: obj.title,
                 message: obj.message,
                 owner: obj.owner,
-                imageUrl: obj.imageUrl || ''
+                imgUrl: obj.imgUrl || '',
+                _id: obj._id
             };
             data.push(post);
         });
@@ -31,36 +31,67 @@ const getAllPosts = async (): Promise<Post[]> => {
     return data;
 };
 
-const getPost = (title: string): Post | undefined => {
-    return data.find((post) => post.title == title);
+const getPost = async (_id: string) => {
+    try{
+        const res = await PostApi.getPost(_id);
+        if (!res) {
+            console.log("Get failed", res);
+        } else {
+            return res;
+        }
+        
+    }catch(err){
+        console.log("Get failed", err);
+    }
+};
+
+const getPostByOwner = async (owner: string): Promise<Post[]>  => {
+    try{
+        const res = await PostApi.getPostByOwner(owner);
+        let data = Array<Post>();
+        if (Array.isArray(res.data)) {
+            res.data.forEach((obj: any) => {
+                console.log("element: " + obj._id);
+                const post: Post = {
+                    title: obj.title,
+                    message: obj.message,
+                    owner: obj.owner,
+                    imgUrl: obj.imgUrl || '',
+                    _id: obj._id
+                };
+                data.push(post);
+            });
+        }
+        return data;
+        
+    }catch(err){
+        console.log("Get failed", err);
+    }
 }
 
-const addPost = (post: Post) => {
-    const data = {
-        title: post.title,
-        message: post.message,
-        owner: post.owner,
-        imageUrl: post.imageUrl
-    }
+
+
+const addPost = async (post: Post) => {
     try {
-        const res = PostApi.addPost(data)
-        console.log('post added:', res);
+        const res = await PostApi.addPost(post);
+        console.log('Post added:', res);
         if (!res) {
-            console.log("save failed " + res)
+            console.log("Save failed", res);
         } else {
-            console.log("save passed")
+            console.log("Save passed");
         }
     } catch (err) {
-        console.log("save failed " + err)
+        console.log("Save failed", err);
     }
-}
+};
+
 
 const deletePost = (title: string) => {
     const index = data.findIndex((post) => post.title === title);
     if (index !== -1) {
         data.splice(index, 1);
     }
-}
+};
 
 const uploadImage = async (imageURI: string) => {
     var body = new FormData();
@@ -81,4 +112,4 @@ const uploadImage = async (imageURI: string) => {
     }
 }
 
-export default { getAllPosts, getPost, addPost, deletePost, uploadImage };
+export default { getAllPosts, getPost, addPost, deletePost, uploadImage, getPostByOwner };
