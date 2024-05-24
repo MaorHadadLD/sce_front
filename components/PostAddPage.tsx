@@ -3,12 +3,15 @@ import React, { FC, useState, useEffect } from 'react';
 import PostModel, { Post } from '../Model/PostModel';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
+import UserModel from '../Model/UserModel';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const PostAddPage: FC<{ navigation: any }> = ({ navigation }) => {
     const [title, setTitle] = useState('');
     const [message, setMessage] = useState('');
     const [imageURI, setImageURI] = useState('');
     const [owner, setOwner] = useState('');
+    const [loading, setLoading] = useState(true);
 
     const requestPermission = async () => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -16,6 +19,27 @@ const PostAddPage: FC<{ navigation: any }> = ({ navigation }) => {
             alert('Sorry, we need camera roll permissions to make this work!');
         }
     };
+
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', async () => {
+            console.log('focus');
+            
+            try {
+                const token: any = await AsyncStorage.getItem('token');
+                if(token){
+                 const user: any = await UserModel.getStudent(token);
+                console.log("UserProfile",user);
+                setOwner(user.data._id);
+                setLoading(false); 
+                }
+                
+            } catch (error) {
+                console.error('Failed to fetch user:', error);
+                setLoading(true);
+            }
+        });
+        return unsubscribe;
+    }, [navigation]);
 
     useEffect(() => {
         requestPermission();
@@ -61,20 +85,20 @@ const PostAddPage: FC<{ navigation: any }> = ({ navigation }) => {
             title: title,
             message: message,
             owner: owner,
-            imageUrl: imageURI
+            imgUrl: ''
         };
         try {
             if (imageURI !== '') {
-                const url = await PostModel.uploadImage(imageURI);
-                post.imageUrl = url as string;
+                post.imgUrl= await UserModel.uploadImage(imageURI);
+               
+            } else {
+                throw new Error('Image URL is required');
             }
-            PostModel.addPost(post);
+            await PostModel.addPost(post);
+            navigation.goBack();
         } catch (err) {
             console.log('Error saving post:', err);
         }
-        navigation.goBack();
-        // PostModel.addPost(post);
-        // navigation.navigate('PostList');
     };
 
     return (
@@ -106,12 +130,8 @@ const PostAddPage: FC<{ navigation: any }> = ({ navigation }) => {
                 placeholder="Enter post message"
                 multiline
             />
-            <TextInput
-                style={styles.input}
-                onChangeText={setOwner}
-                value={owner}
-                placeholder="Enter your name"
-            />
+           
+            
             <View style={styles.buttons}>
                 <TouchableOpacity style={styles.button} onPress={onCancel}>
                     <Text style={styles.buttonText}>CANCEL</Text>
