@@ -5,16 +5,21 @@ import PostApi from '../api/PostApi'
 
 
 const PostDetailsPage: FC<{ route: any, navigation: any }> = ({ route, navigation }) => {
-    const post = PostModel.getPost(route.params.id);
+    console.log("PostDetailsPage",route.params._id);
+    const post = PostModel.getPost(route.params._id);
+    console.log("PostDetailsPage22",post);
+    console.log("PosrWhere",post);
     useEffect(() => {
         navigation.setOptions({
             title: post?.title,
+            
             headerRight: () => (
                 <Button
                     onPress={() => navigation.navigate('PostAddPage')}
                     title="Edit"
                 />
             ),
+            
         })
     }, [])
 
@@ -24,11 +29,11 @@ const PostDetailsPage: FC<{ route: any, navigation: any }> = ({ route, navigatio
 
     return (
         <View style={styles.container}>
-            <Image style={styles.avatar} source={require('../assets/avatar_user.png')} />
+            {/* <Image style={styles.avatar} source={require('../assets/avatar_user.png')} /> */}
             <Text style={styles.input}>{post?.title}</Text>
             <Text style={styles.input}>{post?.message}</Text>
             <Text style={styles.input}>{post?.owner}</Text>
-            <Image style={styles.avatar} source={{ uri: post?.imageUrl }} />
+            <Image style={styles.avatar} source={{ uri: post?.imgUrl }} />
         </View>
     );
 }
