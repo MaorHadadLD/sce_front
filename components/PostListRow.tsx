@@ -7,11 +7,13 @@ const PostListRow: FC<{
     title: string,
     message: string,
     owner: string
-    imageUrl: string
-    onItemSelected: (title: string) => void
-}> = ({ title,message, owner, imageUrl, onItemSelected }) => {
+    imgUrl: string
+    _id: string
+    onItemSelected: (_id: string) => void
+}> = ({ title,message, owner, imgUrl, _id ,onItemSelected }) => {
     const onPress = () => {
-        onItemSelected(title);
+        console.log('Item selected2222: ' + _id);
+        onItemSelected(_id);
     }
     return (
         <TouchableHighlight
@@ -22,8 +24,8 @@ const PostListRow: FC<{
                 <View style={styles.info}>
                     <Text style={styles.name}>{title}</Text>
                     <Text style={styles.id}>{message}</Text>
-                    <Text style={styles.id}>{imageUrl}</Text>
-                    <Text style={styles.id}>{owner}</Text>
+                    <Image style={styles.avatar} source={{uri: imgUrl}} />
+                    <Text style={styles.name}>{owner}</Text>
                 </View>
             </View>
         </TouchableHighlight>
