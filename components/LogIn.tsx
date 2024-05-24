@@ -81,6 +81,7 @@ const LogIn: FC<Props> = ({ navigation }) => {
             <View style={styles.buttonContainer}>
                 <Button title="Log In" onPress={handleLogin} />
             </View>
+            <Text>Don't have an account?</Text>
             <View style={styles.buttonContainer}>
                 <Button title="Sign Up" onPress={handleSignUp} />
             </View>
