@@ -18,9 +18,20 @@ const getStudent = async (id: String) => {
     // return response.data; 
     return apiClient.get(`/user/${id}`);
 };
+const getStudentById = async (id: string) => {
+    return apiClient.get(`/student/${id}`);
+};
 const addStudent = async (student: any) => {
     return apiClient.post('/student', student);
 };
+
+const updateStudent = async (user: any) => {
+    return apiClient.put(`/user/${user._id}`, user);
+};
+
+const logout = async () => {
+    return apiClient.post('/auth/logout');
+}
 
 const uploadImage = async (image: any) => {
     console.log("uploadImageMaor", image);
@@ -39,5 +50,8 @@ export default {
     addStudent,
     uploadImage,
     register,
-    login
+    login,
+    updateStudent,
+    logout,
+    getStudentById
 };
