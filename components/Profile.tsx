@@ -15,9 +15,9 @@ const Profile: FC<{ route: any, navigation: any }> = ({ route, navigation }) => 
         const token: any = await AsyncStorage.getItem('token');
         if (token) {
           const user: any = await UserModel.getStudent(token);
-          console.log("UserProfile", user);
+          
           setData(user.data);
-          console.log("Data", data);
+         
           setLoading(false);
         }
       } catch (error) {
