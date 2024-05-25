@@ -1,25 +1,60 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, Button, Alert, TextInput, StatusBar, ScrollView, TouchableHighlight } from 'react-native';
-import React, { useState, FC, useEffect } from 'react';
+import {
+    StyleSheet,
+    Text,
+    View,
+    Image,
+    TouchableOpacity,
+    TextInput,
+    StatusBar,
+    ScrollView,
+    TouchableHighlight,
+    ActivityIndicator,
+} from 'react-native';
+import React, { useState, useEffect, FC } from 'react';
 import UserModel, { User } from '../Model/UserModel';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const UserEditPage: FC<{ navigation: any }> = ({ navigation }) => {
-    const [name, onChangeName] = React.useState('');
-    const [email, onChangeEmail] = React.useState('');
-    const [password, onChangePassword] = React.useState('');
-    const [image, setImage] = React.useState('');
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [imageURI, setImageURI] = useState('');
+    const [loading, setLoading] = useState(true);
+    const [id, setId] = useState('');
+    
 
-    const requestPermission = async () => {
-        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (status !== 'granted') {
-            alert('Sorry, we need camera roll permissions to make this work!');
+    const fetchUserData = async () => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            if (token) {
+                const user = await UserModel.getStudent(token);
+                setName(user.data.name);
+                setEmail(user.data.email);
+                setPassword(user.data.password);
+                setImageURI(user.data.imgUrl);
+                setId(user.data._id);
+                setLoading(false);
+            }
+        } catch (error) {
+            console.error('Failed to fetch user:', error);
+            setLoading(false);
         }
     };
 
     useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', fetchUserData);
+        return unsubscribe;
+    }, [navigation]);
+
+    useEffect(() => {
+        const requestPermission = async () => {
+            const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+            if (status !== 'granted') {
+                alert('Sorry, we need camera roll permissions to make this work!');
+            }
+        };
         requestPermission();
     }, []);
 
@@ -27,11 +62,10 @@ const UserEditPage: FC<{ navigation: any }> = ({ navigation }) => {
         try {
             const result = await ImagePicker.launchCameraAsync();
             if (!result.canceled) {
-                console.log("uri:" + result.assets[0].uri);
                 setImageURI(result.assets[0].uri);
             }
         } catch (error) {
-            console.log("Error reading an image", error);
+            console.error("Error taking a photo:", error);
         }
     };
 
@@ -44,35 +78,41 @@ const UserEditPage: FC<{ navigation: any }> = ({ navigation }) => {
                 quality: 1,
             });
             if (!result.canceled) {
-                console.log('uri:', result.assets[0].uri);
                 setImageURI(result.assets[0].uri);
             }
         } catch (error) {
-            console.log('Error selecting an image:', error);
+            console.error('Error selecting an image:', error);
         }
     };
 
     const onCancel = () => {
-        console.log('Cancel');
-        navigation.goBack()
-    }
+        navigation.goBack();
+    };
+
     const onSave = () => {
         const user: User = {
             name: name,
-            imgUrl: image ?? '',
-            email: '',
-            password: '',
+            imgUrl: imageURI ?? '',
+            email: email,
+            id: id, 
+            password: password,
         };
-        UserModel.addStudent(user);
-        navigation.navigate('ProfileUser');
+        console.log('user:', user);
+        UserModel.updateStudent(user);
+        navigation.navigate('Profile');
+    };
+
+    if (loading) {
+        return <ActivityIndicator size="large" color="#0000ff" />;
     }
+
     return (
         <ScrollView style={styles.container}>
-           <View style={styles.image_picker}>
-                {imageURI !== '' ? (
+            <View style={styles.image_picker}>
+            {imageURI !== '' ? (
                     <Image style={styles.image} source={{ uri: imageURI }} />
                 ) : (
-                    <Image style={styles.image} source={require('../assets/avatar_user.png')} />
+                    <Image style={styles.image} source={{uri: imageURI}} />
                 )}
                 <TouchableHighlight style={styles.image_picker_button} onPress={takePhoto}>
                     <Ionicons name="camera" size={24} color="black" />
@@ -83,21 +123,22 @@ const UserEditPage: FC<{ navigation: any }> = ({ navigation }) => {
             </View>
             <TextInput
                 style={styles.input}
-                onChangeText={onChangeName}
+                onChangeText={setName}
                 value={name}
-                placeholder="Enter your name"
+                placeholder="Name"
             />
             <TextInput
                 style={styles.input}
-                onChangeText={onChangeEmail}
+                onChangeText={setEmail}
                 value={email}
-                placeholder="Enter your email"
+                placeholder="Email"
             />
             <TextInput
                 style={styles.input}
-                onChangeText={onChangePassword}
+                onChangeText={setPassword}
                 value={password}
-                placeholder="Enter your address"
+                placeholder="Password"
+                secureTextEntry
             />
             <View style={styles.buttons}>
                 <TouchableOpacity style={styles.button} onPress={onCancel}>
@@ -109,7 +150,7 @@ const UserEditPage: FC<{ navigation: any }> = ({ navigation }) => {
             </View>
         </ScrollView>
     );
-}
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -142,7 +183,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     buttonText: {
-        padding: 10
+        padding: 10,
     },
     image_picker: {
         height: 250,
@@ -166,8 +207,6 @@ const styles = StyleSheet.create({
         bottom: 10,
         right: 5,
     },
-
 });
-
 
 export default UserEditPage;
