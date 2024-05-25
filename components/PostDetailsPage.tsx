@@ -40,7 +40,7 @@ const PostDetailsPage: FC<{ route: any, navigation: any }> = ({ route, navigatio
             ) : (
                 <>
                     <View style={styles.header}>
-                        <Image style={styles.avatar} source={user && user.avatarUrl ? { uri: user.avatarUrl } : require('../assets/avatar_user.png')} />
+                        <Image style={styles.avatar} source={user && user.imgUrl ? { uri: user.imgUrl } : require('../assets/avatar_user.png')} />
                         <Text style={styles.owner}>{user ? user.name : 'Unknown'}</Text>
                     </View>
                     <Image style={styles.image} source={{ uri: post.imgUrl }} />
