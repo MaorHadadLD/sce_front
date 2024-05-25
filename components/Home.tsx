@@ -9,6 +9,7 @@ import Profile from "./Profile";
 import UserEditPage from "./UserEditPage";
 import MyPost from "./MyPost";
 
+
 type Props = {
     navigation: any;
 };
@@ -64,6 +65,7 @@ const ProfileScreen: FC = () => {
                 {(props) => <Profile {...props} navigation={navigator} route={props.route} />}
             </ProfileStackScreen.Screen> */}
             <ProfileStackScreen.Screen name="UserEditPage" component={UserEditPage} options={{ title: 'Edit User' }} />
+
         </ProfileStackScreen.Navigator>
     );
 }
