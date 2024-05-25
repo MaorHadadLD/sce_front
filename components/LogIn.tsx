@@ -1,10 +1,7 @@
 import React, { FC, useEffect, useState } from 'react';
-import { Alert, Button, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { NavigationProp } from '@react-navigation/native';
-import apiClient from '../api/Client';  
-import StudentModel from '../Model/UserModel';
 import StudentApi from '../api/StudentApi';
-import Home from './Home';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type Props = {
@@ -29,50 +26,34 @@ const LogIn: FC<Props> = ({ navigation }) => {
     }, []);
 
     const handleLogin = async () => {
-        console.log('Log In');
         if (!email || !password) {
             Alert.alert('Please fill in all fields');
             return;
         }
         try {
-            console.log('CheckEmail', email);
-            console.log('CheckPassword', password);
-            
-            
             const res: any = await StudentApi.login({ email, password });
-
-            
-            console.log('Log In successful', res.data);
-
-            
             if (res.ok) {
                 await AsyncStorage.clear();
                 await AsyncStorage.setItem('token', res.data.refreshToken);
-                console.log('Log In successful');
                 navigation.reset({
                     index: 0,
                     routes: [{ name: 'Home' }],
                 });
-            }
-            else {
-                console.log('Log In failed');
+            } else {
                 Alert.alert('Log In failed', res.data);
             }
         } catch (error) {
-            console.log('Log In failed', error); 
-           
+            // Alert.alert('Log In failed', error.message);
         }
     };
 
     const handleSignUp = () => {
         navigation.navigate('Registration');
-        console.log('Navigate to Sign Up Page');
     };
 
     return (
         <View style={styles.container}>
             <Text style={styles.title}>RecipeNet</Text>
-            <Text style={styles.subtitle}>Log In</Text>
             <TextInput
                 style={styles.input}
                 placeholder="Email"
@@ -80,7 +61,7 @@ const LogIn: FC<Props> = ({ navigation }) => {
                 onChangeText={setEmail}
                 keyboardType="email-address"
                 autoCapitalize="none"
-                placeholderTextColor="#888"
+                placeholderTextColor="#aaa"
             />
             <TextInput
                 style={styles.input}
@@ -88,16 +69,14 @@ const LogIn: FC<Props> = ({ navigation }) => {
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
-                placeholderTextColor="#888"
+                placeholderTextColor="#aaa"
             />
-            <View style={styles.buttonContainer}>
-                <Button title="Log In" onPress={handleLogin} />
-            </View>
-            <Text>Don't have an account?</Text>
-            <View style={styles.buttonContainer}>
-                <Button title="Sign Up" onPress={handleSignUp} />
-            </View>
-            
+            <TouchableOpacity style={styles.button} onPress={handleLogin}>
+                <Text style={styles.buttonText}>Log In</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleSignUp}>
+                <Text style={styles.signupText}>Don't have an account? Sign Up</Text>
+            </TouchableOpacity>
         </View>
     );
 };
@@ -113,24 +92,36 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 32,
         fontWeight: 'bold',
-        marginBottom: 20,
-    },
-    subtitle: {
-        fontSize: 24,
-        marginBottom: 20,
+        marginBottom: 40,
+        color: '#262626',
     },
     input: {
         width: '100%',
         padding: 10,
         borderWidth: 1,
         borderColor: '#ccc',
-        borderRadius: 5,
+        borderRadius: 10,
         marginBottom: 20,
+        backgroundColor: '#fafafa',
         color: '#333',
     },
-    buttonContainer: {
+    button: {
         width: '100%',
+        backgroundColor: '#3897f0',
+        padding: 15,
+        borderRadius: 10,
+        alignItems: 'center',
         marginBottom: 10,
+    },
+    buttonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    signupText: {
+        color: '#3897f0',
+        fontSize: 14,
+        marginTop: 20,
     },
 });
 
