@@ -1,6 +1,6 @@
 import * as ImagePicker from 'expo-image-picker';
 import React, { FC, useEffect, useState } from 'react';
-import { Alert, Button, Image, ScrollView, StyleSheet, TextInput, TouchableHighlight, View } from 'react-native';
+import { Alert, Button, Image, ScrollView, StyleSheet, TextInput, TouchableOpacity, View, Text } from 'react-native';
 import UserModel, { User } from '../Model/UserModel';
 import { Ionicons } from '@expo/vector-icons';
 import StudentApi from '../api/StudentApi';
@@ -29,7 +29,6 @@ const Registration: FC<{ navigation: any }> = ({ navigation }) => {
         try {
             const result = await ImagePicker.launchCameraAsync();
             if (!result.canceled) {
-                console.log("uri:" + result.assets[0].uri);
                 setImageURI(result.assets[0].uri);
             }
         } catch (error) {
@@ -46,7 +45,6 @@ const Registration: FC<{ navigation: any }> = ({ navigation }) => {
                 quality: 1,
             });
             if (!result.canceled) {
-                console.log('uri:', result.assets[0].uri);
                 setImageURI(result.assets[0].uri);
             }
         } catch (error) {
@@ -66,12 +64,10 @@ const Registration: FC<{ navigation: any }> = ({ navigation }) => {
     };
 
     const onCancel = () => {
-        console.log('Cancel');
         navigation.navigate('LogIn');
     };
 
     const onSave = async () => {
-        console.log('Save!!');
         if (!validatePassword(password)) {
             Alert.alert('Invalid Password', 'Password must be at least 6 characters long and contain both letters and digits.');
             return;
@@ -82,7 +78,6 @@ const Registration: FC<{ navigation: any }> = ({ navigation }) => {
             return;
         }
 
-        console.log('Save345');
         const user: User = {
             name: name,
             id: id,
@@ -90,26 +85,27 @@ const Registration: FC<{ navigation: any }> = ({ navigation }) => {
             email: email, 
             password: password,
         };
-       user.imgUrl= await UserModel.uploadImage(imageURI);
-       console.log("userImageBar", user.imgUrl);
-         await StudentApi.register(user);
+        user.imgUrl = await UserModel.uploadImage(imageURI);
+        await StudentApi.register(user);
         navigation.navigate('LogIn');
     };
 
     return (
         <ScrollView contentContainerStyle={styles.contentContainer}>
-            <View style={styles.image_picker}>
-                {imageURI !== '' ? (
+            <View style={styles.imagePicker}>
+                {imageURI ? (
                     <Image style={styles.image} source={{ uri: imageURI }} />
                 ) : (
                     <Image style={styles.image} source={require('../assets/avatar_user.png')} />
                 )}
-                <TouchableHighlight style={styles.image_picker_button} onPress={takePhoto}>
-                    <Ionicons name="camera" size={24} color="black" />
-                </TouchableHighlight>
-                <TouchableHighlight style={styles.image_button} onPress={selectImage}>
-                    <Ionicons name="image" size={24} color="black" />
-                </TouchableHighlight>
+                <View style={styles.iconContainer}>
+                    <TouchableOpacity style={styles.iconButton} onPress={takePhoto}>
+                        <Ionicons name="camera-outline" size={24} color="black" />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.iconButton} onPress={selectImage}>
+                        <Ionicons name="images-outline" size={24} color="black" />
+                    </TouchableOpacity>
+                </View>
             </View>
 
             <TextInput
@@ -117,25 +113,14 @@ const Registration: FC<{ navigation: any }> = ({ navigation }) => {
                 onChangeText={onInitName}
                 value={name}
                 placeholder="Enter your name"
+                placeholderTextColor="#888"
             />
-            {/* <TextInput
-                style={styles.input}
-                onChangeText={onInitId}
-                value={id}
-                placeholder="Enter your ID"
-            /> */}
-            {/* <TextInput
-                style={styles.input}
-                onChangeText={setAge}
-                value={age.toString()}
-                placeholder="Enter your age"
-                keyboardType="numeric"
-            /> */}
             <TextInput
                 style={styles.input}
                 onChangeText={setEmail}
                 value={email}
                 placeholder="Enter your email"
+                placeholderTextColor="#888"
                 keyboardType="email-address"
             />
             <TextInput
@@ -143,11 +128,18 @@ const Registration: FC<{ navigation: any }> = ({ navigation }) => {
                 onChangeText={setPassword}
                 value={password}
                 placeholder="Enter your password"
+                placeholderTextColor="#888"
                 secureTextEntry
             />
             <View style={styles.buttons}>
-                <Button title="Cancel" onPress={onCancel} />
-                <Button title="Save" onPress={onSave} />
+                <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={onCancel}>
+                    <Ionicons name="close-circle-outline" size={24} color="white" />
+                    <Text style={styles.buttonText}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.button, styles.saveButton]} onPress={onSave}>
+                    <Ionicons name="checkmark-circle-outline" size={24} color="white" />
+                    <Text style={styles.buttonText}>Save</Text>
+                </TouchableOpacity>
             </View>
         </ScrollView>
     );
@@ -158,44 +150,71 @@ const styles = StyleSheet.create({
         flexGrow: 1,
         alignItems: 'center',
         justifyContent: 'center',
+        backgroundColor: '#fff',
     },
-    container: {
-        flex: 1,
-        marginTop: 50,
-        flexDirection: 'column',
+    imagePicker: {
+        width: 120,
+        height: 120,
+        borderRadius: 60,
+        backgroundColor: '#f0f0f0',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 30,
+        overflow: 'hidden',
+    },
+    image: {
+        width: '100%',
+        height: '100%',
+    },
+    iconContainer: {
+        position: 'absolute',
+        bottom: 10,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        width: '80%',
+    },
+    iconButton: {
+        backgroundColor: 'rgba(255, 255, 255, 0.7)',
+        padding: 10,
+        borderRadius: 50,
     },
     input: {
         height: 40,
-        margin: 12,
+        marginHorizontal: 20,
+        marginVertical: 10,
         borderWidth: 1,
-        padding: 10,
+        borderColor: '#ddd',
+        borderRadius: 10,
+        paddingHorizontal: 10,
+        backgroundColor: '#f9f9f9',
         width: '80%',
     },
     buttons: {
         flexDirection: 'row',
-        marginTop: 20,
+        justifyContent: 'space-between',
+        marginHorizontal: 20,
+        marginVertical: 20,
+        width: '80%',
     },
-    image_picker: {
-        height: 250,
-        width: 100,
+    button: {
+        flex: 1,
+        marginHorizontal: 5,
+        paddingVertical: 10,
+        borderRadius: 10,
+        flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 20,
     },
-    image: {
-        width: 100,
-        height: 250,
-        resizeMode: 'contain',
+    cancelButton: {
+        backgroundColor: '#f44336',
     },
-    image_picker_button: {
-        position: 'absolute',
-        bottom: 10,
-        left: 5,
+    saveButton: {
+        backgroundColor: '#2196F3',
     },
-    image_button: {
-        position: 'absolute',
-        bottom: 10,
-        right: 5,
+    buttonText: {
+        color: '#fff',
+        marginLeft: 5,
+        fontWeight: 'bold',
     },
 });
 
