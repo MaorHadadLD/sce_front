@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, TouchableHighlight } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableHighlight, ActivityIndicator } from 'react-native';
 import React, { FC, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import UserModel from '../Model/UserModel';
@@ -14,48 +14,44 @@ const PostListRow: FC<{
 }> = ({ title, message, owner, imgUrl, _id, onItemSelected }) => {
     const onPress = () => {
         onItemSelected({ _id, title, message, owner, imgUrl });
-    }
+    };
 
-    const [data, setData] = useState<any>();
+    const [data, setData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-       const fetchUserData = async () => {
-          try {
-           
-            const user: any = await StudentApi.getStudentById(owner);
-           
-            if (user) { 
-              
-              setData(user.data);
-             
-              setLoading(false);
+        const fetchUserData = async () => {
+            try {
+                const user: any = await StudentApi.getStudentById(owner);
+                if (user) {
+                    setData(user.data);
+                    setLoading(false);
+                }
+            } catch (error) {
+                console.error('Failed to fetch user:', error);
+                setLoading(false); 
             }
-          } catch (error) {
-            console.error('Failed to fetch user:', error);
-            setLoading(true);
-          }
         };
         fetchUserData();
-        }, [data]); 
-     
-      
+    }, []); 
+
     return (
         <TouchableHighlight onPress={onPress} underlayColor={'#DDDDDD'}>
             <View style={styles.container}>
                 <View style={styles.header}>
-                    <Image style={styles.avatar} source={require('../assets/avatar_user.png')} />
-                    <Text style={styles.owner}>{owner}</Text>
+                    <Image style={styles.avatar} source={data && data.imgUrl ? { uri: data.imgUrl } : require('../assets/avatar_user.png')} />
+                    <Text style={styles.owner}>{data ? data.name : 'Loading...'}</Text>
                 </View>
                 <Image style={styles.image} source={{ uri: imgUrl }} />
                 <View style={styles.content}> 
                     <Text style={styles.title}>{title}</Text>
                     <Text style={styles.message}>{message}</Text>
                 </View>
+                {loading && <ActivityIndicator size="large" color="#0000ff" />}
             </View>
         </TouchableHighlight>
     );
-}
+};
 
 const styles = StyleSheet.create({
     container: {
