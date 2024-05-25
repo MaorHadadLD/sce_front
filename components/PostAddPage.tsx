@@ -22,17 +22,13 @@ const PostAddPage: FC<{ navigation: any }> = ({ navigation }) => {
 
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', async () => {
-            console.log('focus');
-            
             try {
                 const token: any = await AsyncStorage.getItem('token');
-                if(token){
-                 const user: any = await UserModel.getStudent(token);
-                console.log("UserProfile",user);
-                setOwner(user.data._id);
-                setLoading(false); 
+                if (token) {
+                    const user: any = await UserModel.getStudent(token);
+                    setOwner(user.data._id);
+                    setLoading(false);
                 }
-                
             } catch (error) {
                 console.error('Failed to fetch user:', error);
                 setLoading(true);
@@ -49,7 +45,6 @@ const PostAddPage: FC<{ navigation: any }> = ({ navigation }) => {
         try {
             const result = await ImagePicker.launchCameraAsync();
             if (!result.canceled) {
-                console.log('uri:', result.assets[0].uri);
                 setImageURI(result.assets[0].uri);
             }
         } catch (error) {
@@ -66,7 +61,6 @@ const PostAddPage: FC<{ navigation: any }> = ({ navigation }) => {
                 quality: 1,
             });
             if (!result.canceled) {
-                console.log('uri:', result.assets[0].uri);
                 setImageURI(result.assets[0].uri);
             }
         } catch (error) {
@@ -75,12 +69,10 @@ const PostAddPage: FC<{ navigation: any }> = ({ navigation }) => {
     };
 
     const onCancel = () => {
-        console.log('Cancel');
         navigation.navigate('PostList');
     };
 
     const onSaveCallback = async () => {
-        console.log('Save');
         const post: Post = {
             title: title,
             message: message,
@@ -89,8 +81,7 @@ const PostAddPage: FC<{ navigation: any }> = ({ navigation }) => {
         };
         try {
             if (imageURI !== '') {
-                post.imgUrl= await UserModel.uploadImage(imageURI);
-               
+                post.imgUrl = await UserModel.uploadImage(imageURI);
             } else {
                 throw new Error('Image URL is required');
             }
@@ -103,18 +94,22 @@ const PostAddPage: FC<{ navigation: any }> = ({ navigation }) => {
 
     return (
         <ScrollView style={styles.container}>
-            <View style={styles.image_picker}>
-                {imageURI !== '' ? (
+            <View style={styles.imagePicker}>
+                {imageURI ? (
                     <Image style={styles.image} source={{ uri: imageURI }} />
                 ) : (
-                    <Image style={styles.image} source={require('../assets/avatar_user.png')} />
+                    <View style={styles.placeholderImage}>
+                        <Ionicons name="image-outline" size={100} color="#ccc" />
+                    </View>
                 )}
-                <TouchableOpacity style={styles.image_picker_button} onPress={takePhoto}>
-                    <Ionicons name="camera" size={24} color="black" />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.image_button} onPress={selectImage}>
-                    <Ionicons name="image" size={24} color="black" />
-                </TouchableOpacity>
+                <View style={styles.iconContainer}>
+                    <TouchableOpacity style={styles.iconButton} onPress={takePhoto}>
+                        <Ionicons name="camera-outline" size={24} color="black" />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.iconButton} onPress={selectImage}>
+                        <Ionicons name="images-outline" size={24} color="black" />
+                    </TouchableOpacity>
+                </View>
             </View>
 
             <TextInput
@@ -122,22 +117,23 @@ const PostAddPage: FC<{ navigation: any }> = ({ navigation }) => {
                 onChangeText={setTitle}
                 value={title}
                 placeholder="Enter post title"
+                placeholderTextColor="#888"
             />
             <TextInput
-                style={styles.input}
+                style={[styles.input, { height: 100 }]}
                 onChangeText={setMessage}
                 value={message}
                 placeholder="Enter post message"
+                placeholderTextColor="#888"
                 multiline
             />
-           
-            
+
             <View style={styles.buttons}>
-                <TouchableOpacity style={styles.button} onPress={onCancel}>
-                    <Text style={styles.buttonText}>CANCEL</Text>
+                <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={onCancel}>
+                    <Text style={styles.buttonText}>Cancel</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.button} onPress={onSaveCallback}>
-                    <Text style={styles.buttonText}>SAVE</Text>
+                <TouchableOpacity style={[styles.button, styles.saveButton]} onPress={onSaveCallback}>
+                    <Text style={styles.buttonText}>Save</Text>
                 </TouchableOpacity>
             </View>
         </ScrollView>
@@ -146,48 +142,73 @@ const PostAddPage: FC<{ navigation: any }> = ({ navigation }) => {
 
 const styles = StyleSheet.create({
     container: {
-        marginTop: StatusBar.currentHeight,
         flex: 1,
-        flexDirection: 'column',
+        backgroundColor: '#fff',
+        paddingTop: StatusBar.currentHeight,
     },
-    image_picker: {
-        height: 250,
-        width: 100,
+    imagePicker: {
+        height: 300,
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: '#f0f0f0',
         marginBottom: 20,
     },
     image: {
-        width: 100,
-        height: 250,
-        resizeMode: 'contain',
+        width: '100%',
+        height: '100%',
+        resizeMode: 'cover',
     },
-    image_picker_button: {
+    placeholderImage: {
+        width: '100%',
+        height: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#e0e0e0',
+    },
+    iconContainer: {
         position: 'absolute',
         bottom: 10,
-        left: 5,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        width: '80%',
     },
-    image_button: {
-        position: 'absolute',
-        bottom: 10,
-        right: 5,
+    iconButton: {
+        backgroundColor: 'rgba(255, 255, 255, 0.7)',
+        padding: 10,
+        borderRadius: 50,
     },
     input: {
         height: 40,
-        margin: 12,
+        marginHorizontal: 20,
+        marginVertical: 10,
         borderWidth: 1,
-        padding: 10,
+        borderColor: '#ddd',
+        borderRadius: 10,
+        paddingHorizontal: 10,
+        backgroundColor: '#f9f9f9',
     },
     buttons: {
         flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginHorizontal: 20,
+        marginVertical: 20,
     },
     button: {
         flex: 1,
-        margin: 10,
+        marginHorizontal: 5,
+        paddingVertical: 10,
+        borderRadius: 10,
         alignItems: 'center',
     },
+    cancelButton: {
+        backgroundColor: '#f44336',
+    },
+    saveButton: {
+        backgroundColor: '#2196F3',
+    },
     buttonText: {
-        padding: 10,
+        color: '#fff',
+        fontWeight: 'bold',
     },
 });
 
