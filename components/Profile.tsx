@@ -1,50 +1,43 @@
 import React, { FC, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, StatusBar, Button, ActivityIndicator, FlatList, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Image, StatusBar, Button, ActivityIndicator, ScrollView, TouchableOpacity } from 'react-native';
 import StudentApi from '../api/StudentApi';
-import UserModel, {User} from '../Model/UserModel';
+import UserModel from '../Model/UserModel';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-
-
-const Profile: FC<{route: any,navigation: any }> = ({  route ,navigation }) => {
+const Profile: FC<{ route: any, navigation: any }> = ({ route, navigation }) => {
   const [data, setData] = useState<any>();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
-        console.log('focus');
-        
-        try {
-            const token: any = await AsyncStorage.getItem('token');
-            if(token){
-             const user: any = await UserModel.getStudent(token);
-            console.log("UserProfile",user);
-            setData(user.data);
-            console.log("Data",data);
-            setLoading(false); 
-            }
-            
-        } catch (error) {
-            console.error('Failed to fetch user:', error);
-            setLoading(false);
+      console.log('focus');
+      try {
+        const token: any = await AsyncStorage.getItem('token');
+        if (token) {
+          const user: any = await UserModel.getStudent(token);
+          console.log("UserProfile", user);
+          setData(user.data);
+          console.log("Data", data);
+          setLoading(false);
         }
+      } catch (error) {
+        console.error('Failed to fetch user:', error);
+        setLoading(false);
+      }
     });
     return unsubscribe;
-}, [navigation]);
+  }, [navigation]);
 
   useEffect(() => {
     navigation.setOptions({
-        headerRight: () => (
-            <Button
-                onPress={() => navigation.navigate('UserEditPage')}
-                title="Edit Profile"
-            />
-        ),
-    })
-}, [])
-
-
-
+      headerRight: () => (
+        <Button
+          onPress={() => navigation.navigate('UserEditPage')}
+          title="Edit Profile"
+        />
+      ),
+    });
+  }, []);
 
   if (loading) {
     return (
@@ -52,78 +45,89 @@ const Profile: FC<{route: any,navigation: any }> = ({  route ,navigation }) => {
     );
   }
 
-  
+  const onLogout = async () => {
+    try {
+      await AsyncStorage.removeItem('token');
+      navigation.navigate('LogIn');
+      await StudentApi.logout();
+    } catch (error) {
+      console.error('Failed to logout:', error);
+    }
+  };
 
   return (
-    <View style={styles.container}>
-     <ScrollView contentContainerStyle={styles.contentContainer}>
-            <View style={styles.image_picker}>
-                {data.imgUrl !== '' ? (
-                    <Image style={styles.image} source={{ uri: data.imgUrl }} />
-                ) : (
-                    <Image style={styles.image} source={require('../assets/avatar_user.png')} />
-                )}
-            </View>
-            <Text style={styles.input}> 
-              {data.name}
-            </Text>
-            <Text style={styles.input}>
-              {data.email}
-            </Text>
-            
-        </ScrollView>
-      
-    </View>
+    <ScrollView contentContainerStyle={styles.contentContainer}>
+      <View style={styles.profileContainer}>
+        <View style={styles.imageContainer}>
+          {data.imgUrl !== '' ? (
+            <Image style={styles.avatar} source={{ uri: data.imgUrl }} />
+          ) : (
+            <Image style={styles.avatar} source={require('../assets/avatar_user.png')} />
+          )}
+        </View>
+        <Text style={styles.name}>{data.name}</Text>
+        <Text style={styles.email}>{data.email}</Text>
+        <TouchableOpacity style={styles.logoutButton} onPress={onLogout}>
+          <Text style={styles.logoutButtonText}>Logout</Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    marginTop: StatusBar.currentHeight || 0,
-    flex: 1,
+  contentContainer: {
+    flexGrow: 1,
+    backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'center',
+    paddingTop: StatusBar.currentHeight || 20,
+  },
+  profileContainer: {
+    width: '100%',
+    alignItems: 'center',
+    padding: 20,
+  },
+  imageContainer: {
+    marginBottom: 20,
   },
   avatar: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+  },
+  name: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginVertical: 5,
+  },
+  email: {
+    fontSize: 16,
+    color: 'gray',
     marginBottom: 20,
   },
-  input: {
-    height: 40,
-    margin: 12,
-    borderWidth: 1,
-    padding: 10,
-    color: 'black',
+  editButton: {
+    backgroundColor: '#3897f0',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    marginBottom: 10,
   },
-  image_picker: {
-    height: 250,
-    width: 100,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 20,
-},
-image: {
-    width: 100,
-    height: 250,
-    resizeMode: 'contain',
-},
-image_picker_button: {
-    position: 'absolute',
-    bottom: 10,
-    left: 5,
-},
-image_button: {
-    position: 'absolute',
-    bottom: 10,
-    right: 5,
-},
-contentContainer: {
-  flexGrow: 1,
-  alignItems: 'center',
-  justifyContent: 'center',
-},
+  editButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  logoutButton: {
+    backgroundColor: '#e1306c',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+  logoutButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
 });
 
 export default Profile;
