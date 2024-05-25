@@ -1,31 +1,24 @@
 import { FC, useEffect, useState } from "react";
-import { FlatList, Text, StyleSheet, View, Image, Button } from "react-native";
+import { FlatList, StyleSheet, View, Button } from "react-native";
 import PostModel, { Post } from "../Model/PostModel";
 import PostListRow from "./PostListRow";
-import PostDetailsPage from "./PostDetailsPage";
-import { on } from "form-data";
 
 const PostList: FC<{ navigation: any }> = ({ navigation }) => {
     const [data, setData] = useState<Post[]>([]);
-    
 
-    const onItemSelected = (_id: string) => {
-        console.log('Item selectedNOmen: ' + _id);
-        navigation.navigate('PostDetailsPage', { _id: _id });
+    const onItemSelected = (post: Post) => {
+        navigation.navigate('PostDetailsPage', { post });
     }
 
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', async () => {
-            console.log('focus');
-            // setData([...PostModel.getPost()]);
             let posts: Post[] = [];
             try {
                 posts = await PostModel.getAllPosts();
-                console.log("postsXX: " + posts.map((post) => post._id));
                 setData(posts);
             } catch (err) {
-                console.log("fail fetching post " + err)
-                }
+                console.log("Failed to fetch posts: " + err);
+            }
         });
         return unsubscribe;
     }, [navigation]);
@@ -33,21 +26,13 @@ const PostList: FC<{ navigation: any }> = ({ navigation }) => {
     useEffect(() => {
         navigation.setOptions({
             headerRight: () => (
-                <Button
-                    onPress={() => navigation.navigate('PostAddPage')}
-                    title="Add"
-                />
+                <Button onPress={() => navigation.navigate('PostAddPage')} title="Add Post" />
             ),
-        })
-        navigation.setOptions({
             headerLeft: () => (
-                <Button
-                    onPress={() => navigation.navigate('MyPost')}
-                    title="My Post"
-                />
+                <Button onPress={() => navigation.navigate('MyPost')} title="My Post" />
             ),
-        })
-    }, [])
+        });
+    }, [navigation]);
 
     return (
         <View style={styles.container}>
@@ -73,38 +58,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 16,
-    },
-    postContainer: {
-        marginBottom: 16,
-        padding: 16,
-        backgroundColor: '#fff',
-        borderRadius: 8,
-        elevation: 1,
-    },
-    image: {
-        width: '100%',
-        height: 200,
-        resizeMode: 'cover',
-        borderRadius: 8,
-    },
-    title: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        marginVertical: 8,
-    },
-    message: {
-        fontSize: 16,
-        marginVertical: 4,
-    },
-    owner: {
-        fontSize: 14,
-        fontStyle: 'italic',
-        color: 'gray',
-    },
-    errorText: {
-        color: 'red',
-        textAlign: 'center',
-        marginVertical: 8,
     },
 });
 
