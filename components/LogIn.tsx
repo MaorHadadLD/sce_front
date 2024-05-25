@@ -1,7 +1,7 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { Alert, Button, StyleSheet, Text, TextInput, View } from 'react-native';
 import { NavigationProp } from '@react-navigation/native';
-import apiClient from '../api/Client';  // Ensure this path is correct
+import apiClient from '../api/Client';  
 import StudentModel from '../Model/UserModel';
 import StudentApi from '../api/StudentApi';
 import Home from './Home';
@@ -15,6 +15,18 @@ const LogIn: FC<Props> = ({ navigation }) => {
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
 
+    useEffect(() => {
+        const checkToken = async () => {
+            const token = await AsyncStorage.getItem('token');
+            if (token) {
+                navigation.reset({
+                    index: 0,
+                    routes: [{ name: 'Home' }],
+                });
+            }
+        };
+        checkToken();
+    }, []);
 
     const handleLogin = async () => {
         console.log('Log In');
@@ -26,7 +38,7 @@ const LogIn: FC<Props> = ({ navigation }) => {
             console.log('CheckEmail', email);
             console.log('CheckPassword', password);
             
-            // Await the promise returned by StudentApi.login
+            
             const res: any = await StudentApi.login({ email, password });
 
             
@@ -47,8 +59,8 @@ const LogIn: FC<Props> = ({ navigation }) => {
                 Alert.alert('Log In failed', res.data);
             }
         } catch (error) {
-            console.log('Log In failed', error); // Log the error for better debugging
-            Alert.alert('Log In failed', error.message || 'Unknown error'); // Show the error message if available
+            console.log('Log In failed', error); 
+           
         }
     };
 
