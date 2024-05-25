@@ -1,20 +1,9 @@
-import {
-    StyleSheet,
-    Text,
-    View,
-    Image,
-    TouchableOpacity,
-    TextInput,
-    StatusBar,
-    ScrollView,
-    TouchableHighlight,
-    ActivityIndicator,
-} from 'react-native';
-import React, { useState, useEffect, FC } from 'react';
-import UserModel, { User } from '../Model/UserModel';
+import React, { FC, useState, useEffect } from 'react';
+import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity, ScrollView, StatusBar, ActivityIndicator, TouchableHighlight } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import UserModel, { User } from '../Model/UserModel';
 
 const UserEditPage: FC<{ navigation: any }> = ({ navigation }) => {
     const [name, setName] = useState('');
@@ -23,7 +12,6 @@ const UserEditPage: FC<{ navigation: any }> = ({ navigation }) => {
     const [imageURI, setImageURI] = useState('');
     const [loading, setLoading] = useState(true);
     const [id, setId] = useState('');
-    
 
     const fetchUserData = async () => {
         try {
@@ -61,7 +49,7 @@ const UserEditPage: FC<{ navigation: any }> = ({ navigation }) => {
     const takePhoto = async () => {
         try {
             const result = await ImagePicker.launchCameraAsync();
-            if (!result.canceled) {
+            if (!result.cancelled) {
                 setImageURI(result.assets[0].uri);
             }
         } catch (error) {
@@ -77,7 +65,7 @@ const UserEditPage: FC<{ navigation: any }> = ({ navigation }) => {
                 aspect: [4, 3],
                 quality: 1,
             });
-            if (!result.canceled) {
+            if (!result.cancelled) {
                 setImageURI(result.assets[0].uri);
             }
         } catch (error) {
@@ -94,7 +82,7 @@ const UserEditPage: FC<{ navigation: any }> = ({ navigation }) => {
             name: name,
             imgUrl: imageURI ?? '',
             email: email,
-            id: id, 
+            id: id,
             password: password,
         };
         console.log('user:', user);
@@ -107,19 +95,19 @@ const UserEditPage: FC<{ navigation: any }> = ({ navigation }) => {
     }
 
     return (
-        <ScrollView style={styles.container}>
-            <View style={styles.image_picker}>
-            {imageURI !== '' ? (
-                    <Image style={styles.image} source={{ uri: imageURI }} />
+        <ScrollView contentContainerStyle={styles.container}>
+            <View style={styles.imageContainer}>
+                {imageURI ? (
+                    <Image style={styles.avatar} source={{ uri: imageURI }} />
                 ) : (
-                    <Image style={styles.image} source={{uri: imageURI}} />
+                    <Image style={styles.avatar} source={require('../assets/avatar_user.png')} />
                 )}
-                <TouchableHighlight style={styles.image_picker_button} onPress={takePhoto}>
+                <TouchableOpacity style={styles.cameraIcon} onPress={takePhoto}>
                     <Ionicons name="camera" size={24} color="black" />
-                </TouchableHighlight>
-                <TouchableHighlight style={styles.image_button} onPress={selectImage}>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.imageIcon} onPress={selectImage}>
                     <Ionicons name="image" size={24} color="black" />
-                </TouchableHighlight>
+                </TouchableOpacity>
             </View>
             <TextInput
                 style={styles.input}
@@ -140,12 +128,12 @@ const UserEditPage: FC<{ navigation: any }> = ({ navigation }) => {
                 placeholder="Password"
                 secureTextEntry
             />
-            <View style={styles.buttons}>
-                <TouchableOpacity style={styles.button} onPress={onCancel}>
+            <View style={styles.buttonContainer}>
+                <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>
                     <Text style={styles.buttonText}>CANCEL</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.button} onPress={onSave}>
-                    <Text style={styles.buttonText}>SAVE</Text>
+                <TouchableOpacity style={styles.saveButton} onPress={onSave}>
+                    <Text style={[styles.buttonText, { color: '#fff' }]}>SAVE</Text>
                 </TouchableOpacity>
             </View>
         </ScrollView>
@@ -154,58 +142,70 @@ const UserEditPage: FC<{ navigation: any }> = ({ navigation }) => {
 
 const styles = StyleSheet.create({
     container: {
-        marginTop: StatusBar.currentHeight,
         flex: 1,
-        flexDirection: 'column',
+        backgroundColor: '#fff',
+        paddingHorizontal: 20,
+        paddingTop: StatusBar.currentHeight || 20,
     },
-    title: {
-        fontSize: 30,
-        fontWeight: 'bold',
-        backgroundColor: 'blue',
+    imageContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 20,
+        position: 'relative',
     },
     avatar: {
-        alignSelf: 'center',
-        height: 200,
-        width: 200,
+        width: 150,
+        height: 150,
+        borderRadius: 75,
+    },
+    cameraIcon: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        backgroundColor: '#fff',
+        padding: 10,
+        borderRadius: 20,
+    },
+    imageIcon: {
+        position: 'absolute',
+        bottom: 0,
+        right: 0,
+        backgroundColor: '#fff',
+        padding: 10,
+        borderRadius: 20,
     },
     input: {
         height: 40,
-        margin: 12,
+        marginVertical: 10,
         borderWidth: 1,
-        padding: 10,
+        borderColor: '#ddd',
+        paddingHorizontal: 10,
+        borderRadius: 5,
     },
-    buttons: {
+    buttonContainer: {
         flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginVertical: 20,
     },
-    button: {
+    cancelButton: {
         flex: 1,
-        margin: 10,
+        backgroundColor: '#f0f0f0',
+        paddingVertical: 15,
         alignItems: 'center',
+        borderRadius: 5,
+    },
+    saveButton: {
+        flex: 1,
+        backgroundColor: '#3897f0',
+        paddingVertical: 15,
+        alignItems: 'center',
+        borderRadius: 5,
+        marginLeft: 10,
     },
     buttonText: {
-        padding: 10,
-    },
-    image_picker: {
-        height: 250,
-        width: 100,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: 20,
-    },
-    image: {
-        width: 100,
-        height: 250,
-        resizeMode: 'contain',
-    },
-    image_picker_button: {
-        position: 'absolute',
-        bottom: 10,
-        left: 5,
-    },
-    image_button: {
-        position: 'absolute',
-        bottom: 10,
-        right: 5,
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#000',
     },
 });
 
