@@ -11,7 +11,7 @@ import PostListRow from './PostListRow';
 
 
 
-const MyPost: FC<{route: any,navigation: any }> = ({  route ,navigation }) => {
+const MyPost: FC<{ route: any, navigation: any }> = ({ route, navigation }) => {
     const [data, setData] = useState<Post[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -23,13 +23,12 @@ const MyPost: FC<{route: any,navigation: any }> = ({  route ,navigation }) => {
                 const token: any = await AsyncStorage.getItem('token');
                 const user: any = await UserModel.getStudent(token);
                 if (token) {
-                posts = await PostModel.getPostByOwner(user.data._id);
-                console.log("Posts",posts);
-                setData(posts);
-                console.log("Data",data);
-                setLoading(false); 
+                    posts = await PostModel.getPostByOwner(user.data._id);
+                    console.log("Posts", posts);
+                    setData(posts);
+                    console.log("Data", data);
+                    setLoading(false);
                 }
-                
             } catch (error) {
                 console.error('Failed to fetch posts:', error);
                 setLoading(false);
@@ -40,26 +39,25 @@ const MyPost: FC<{route: any,navigation: any }> = ({  route ,navigation }) => {
 
     if (loading) {
         return (
-          <ActivityIndicator size="large" color="#0000ff" />
+            <ActivityIndicator size="large" color="#0000ff" />
         );
-      }
+    }
 
-      return (
+    return (
         <View style={styles.container}>
             <FlatList
                 data={data}
                 keyExtractor={(item) => item._id ?? ''}
-                renderItem={({ item }) => ( 
+                renderItem={({ item }) => (
                     <PostListRow
                         title={item.title}
                         message={item.message}
                         owner={item.owner}
                         imgUrl={item.imgUrl}
                         _id={item._id ?? ''}
-                        onItemSelected={(id) => navigation.navigate('PostDetailsPage', { _id: id })}
+                        onItemSelected={(post) => navigation.navigate('PostDetailsPage', { post })}
                     />
                 )}
-                
             />
         </View>
     );
@@ -75,6 +73,5 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
 });
-
 
 export default MyPost;
