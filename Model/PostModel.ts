@@ -112,4 +112,6 @@ const uploadImage = async (imageURI: string) => {
     }
 }
 
-export default { getAllPosts, getPost, addPost, deletePost, uploadImage, getPostByOwner };
+
+
+export default { getAllPosts, getPost, addPost, deletePost, uploadImage, getPostByOwner};
