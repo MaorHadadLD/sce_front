@@ -45,9 +45,6 @@ const getStudent  = async (id: string) => {
     catch(err){
         console.log("Get failed", err)
     }
-    
-    
-   
 }
 
 const addStudent = (user: User) => {
@@ -65,6 +62,24 @@ const deleteStudent = (id: string) => {
     if (index !== -1) {
         data.splice(index, 1);
     }
+}
+
+const updateStudent = async (user: User) => {
+    console.log("updateStudentP!@P")
+    try {
+        const res = await StudentApi.updateStudent(user);
+        if (res.status !== 200) {
+            console.log("save failed.. " + res.problem);
+        } else {
+            const updateUser = res.data;
+            console.log("save passed" + updateUser);
+            return updateUser;
+        }
+    }
+    catch (err) {
+        console.log("save failed " + err);
+    }
+
 }
 
 const uploadImage = async (imageURI: string) => {
@@ -89,4 +104,4 @@ const uploadImage = async (imageURI: string) => {
     }
 };
 
-export default { getAllStudents, getStudent, addStudent, deleteStudent, uploadImage };
+export default { getAllStudents, getStudent, addStudent, deleteStudent, uploadImage, updateStudent};
