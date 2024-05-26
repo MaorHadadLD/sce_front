@@ -29,8 +29,10 @@ const updateStudent = async (user: any) => {
     return apiClient.put(`/user/${user._id}`, user);
 };
 
-const logout = async () => {
-    return apiClient.post('/auth/logout');
+const logout = async (user: any) => {
+    return apiClient.post(`/a
+    
+    uth/logout/${user}`);
 }
 
 const uploadImage = async (image: any) => {
