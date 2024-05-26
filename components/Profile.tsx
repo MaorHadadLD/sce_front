@@ -49,7 +49,7 @@ const Profile: FC<{ route: any, navigation: any }> = ({ route, navigation }) => 
     try {
       await AsyncStorage.removeItem('token');
       navigation.navigate('LogIn');
-      await StudentApi.logout();
+      await StudentApi.logout(data._id);
     } catch (error) {
       console.error('Failed to logout:', error);
     }
